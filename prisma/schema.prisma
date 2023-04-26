@@ -10,8 +10,113 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User{
-  mail_id String @unique @id
-  username String 
-  phone_no String
+model user {
+  user_id       String  @id @default(uuid()) @db.Uuid
+  username      String  @unique
+  mail_id       String  @unique
+  ph_no         String
+  address       address @relation(fields: [address_id], references: [address_id])
+  address_id    String  @db.Uuid
+  password      String
+  profile_image String
+}
+
+model books {
+  book_id      String        @id @default(uuid()) @db.Uuid
+  book_name    String
+  book_type    String
+  price        price_details @relation(fields: [price_id], references: [p_id])
+  price_id     String        @db.Uuid
+  availabe_for String
+  category     String
+  publisher    String
+  author_name  String
+  description  String
+  image        String
+  ratings      String
+  language     String
+  discount     Int
+  rating       rating[]
+  readlist     readlist[]
+}
+
+model price_details {
+  p_id          String  @id @default(uuid()) @db.Uuid
+  selling_price Int
+  actual_price  Int
+  discount      Int
+  Book          books[]
+}
+
+model events {
+  event_id             String             @id @default(uuid()) @db.Uuid
+  name                 String
+  duration             DateTime
+  location             String
+  organiser_details    events_org_details @relation(fields: [organiser_details_id], references: [organiser_details_id])
+  organiser_details_id String             @db.Uuid
+}
+
+model events_org_details {
+  organiser_details_id String   @id @default(uuid()) @db.Uuid
+  name                 String
+  address              DateTime
+  ph_no                String
+  mail_id              String   @unique
+  events               events[]
+}
+
+model location {
+  loc_id      String   @id @default(uuid()) @db.Uuid
+  loc_address String
+  city        DateTime
+  state       String
+  country     String
+  image       String
+}
+
+model readlist {
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String
+  book        books    @relation(fields: [book_id], references: [book_id])
+  book_id     String[] @db.Uuid
+  book_name   String
+  description String
+}
+
+model address {
+  address_id      String  @id @default(uuid()) @db.Uuid
+  pincode         Int
+  area_and_street String
+  city_town       String
+  state           String
+  landmark        String
+  user            user[]
+  order           order[]
+}
+
+model payment {
+  payment_id   String   @id @default(uuid()) @db.Uuid
+  payment_type String
+  payment_date DateTime
+  price        Int
+  order        order[]
+}
+
+model order {
+  order_id   String   @id @default(uuid()) @db.Uuid
+  status     String
+  order_date DateTime
+  address    address  @relation(fields: [address_id], references: [address_id])
+  address_id String   @db.Uuid
+  payment    payment  @relation(fields: [payment_id], references: [payment_id])
+  payment_id String   @db.Uuid
+}
+
+model rating {
+  rating_id    String @id
+  user_id      String
+  rating_value String
+  book_name    books  @relation(fields: [book_id], references: [book_id])
+  book_id      String @db.Uuid
 }
